@@ -1,0 +1,33 @@
+; Sample file for WinSendKeys -f mode with waiting for windownames to open and/or close
+; Comment starts with a semicolon at position 1, empty lines are ignored
+; Use as: WinSendKeys -f WinSendKeys-WaitWindow.stro -v scite
+; Alternative: WinSendKeys -w SciTE -f WinSendKeys-MultiWindow.stro -v
+; Selects a SciTE instance, opens a new document and types a sentence, waits to Notepad, types a sentence in the new document, waits for notepad to close, back to scite, end of document, adds a line with date/time stamp
+; Start of script:
+; - Create new document and type some text
+^n
+A single sentence in a new file{enter}
+; Wait 60 seconds for Notepad to be available
+--winwait Notepad.exe 60
+--error goto nonotepad
+New file in Notepad{enter}
+Please close notepad without saving the file...
+--winclose notepad.exe
+--error quit
+--:nonotepad
+; display some message from a sub
+--gosub message and some extra text
+; Select scite again
+--window scite.exe
+--delay 1000
+; type some more text with a timestamp
+^{end}{enter}@YEAR@-@MON@-@MDAY@ @HOUR@:@MIN@:@SEC@.@MSEC@: This is timestamped in scite (-v parameter required for WinSendKeys)
+; End of action
+--goto exit
+; subroutine
+--:message
+--msg 10,Some message with a 10 second timeout $params$
+--return
+--:exit
+; Report we're done to the user
+--msg It's all finished :-)

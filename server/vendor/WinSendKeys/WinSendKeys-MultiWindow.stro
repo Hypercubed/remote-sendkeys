@@ -1,0 +1,18 @@
+; Sample file for WinSendKeys -f mode with multiple windownames
+; Comment starts with a semicolon at position 1, empty lines are ignored
+; Use as: WinSendKeys -f WinSendKeys-MultiWindow.stro -v scite
+; Alternative: WinSendKeys -w SciTE -f WinSendKeys-MultiWindow.stro -v
+; Selects a SciTE instance, opens a new document and types a sentence, switches to Notepad++, types a sentence in a new document, nack to scite, new document, another sentence, wait a second, start notepad and add a line to test.txt with date/time stamp
+; Start of script:
+^n
+A single sentence
+--window Notepad++
+^n
+New file in Notepad{+}{+}
+--exec scite.exe
+^n
+Another new file in SciTe
+--delay 1000
+--exec "notepad.exe"_"test.txt"
+^{end}@YEAR@-@MON@-@MDAY@ @HOUR@:@MIN@:@SEC@.@MSEC@: This is timestamped in notepad (-v parameter required for WinSendKeys)
+{enter}^s

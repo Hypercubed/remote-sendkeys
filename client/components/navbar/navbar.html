@@ -1,0 +1,29 @@
+<div class="navbar navbar-default navbar-fixed-top" ng-controller="NavbarCtrl">
+  <div class="container">
+    <div class="navbar-header">
+      <button class="navbar-toggle" type="button" ng-click="isCollapsed = !isCollapsed">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a href="/" class="navbar-brand">open-remote</a>
+    </div>
+    <div collapse="isCollapsed" class="navbar-collapse collapse" id="navbar-main">
+      <ul class="nav navbar-nav">
+        <li ng-repeat="item in menu" ng-class="{active: isActive(item.link)}">
+            <a ng-href="{{item.link}}">{{item.title}}</a>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <!-- li ng-class="{active: main.isEditing}">
+          <a class="btn"
+            ng-click="main.isEditing = !main.isEditing; main.doneEditingKeys();"
+            ng-class="{active: main.isEditing}">
+            <i class="glyphicon glyphicon-cog"></i>
+          </a>
+        </li -->
+      </ul>
+    </div>
+  </div>
+</div>

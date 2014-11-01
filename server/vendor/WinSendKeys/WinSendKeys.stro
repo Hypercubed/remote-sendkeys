@@ -1,0 +1,8 @@
+; Sample file for WinSendKeys -f mode
+; Comment starts with a semicolon at position 1, empty lines are ignored
+; Use as: WinSendKeys -f WinSendKeys.stro scite
+; Alternative: WinSendKeys -w SciTE -f WinSendKeys.stro
+; Selects a SciTE instance, opens a new document and types a sentence
+; Start of script:
+^n
+A single sentence

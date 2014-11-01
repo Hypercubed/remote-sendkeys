@@ -1,0 +1,137 @@
+WinSendKeys 3.2.0.1 Readme.txt
+---------------------------------------------------------------------
+Author: Ath
+Date: 2011-10-01
+Version: 3.2.1.0
+Updates:
+Support: www.donationcoder.com/forum/index.php?topic=25389.0
+History:
+Removed, read all in the WinSendKeys.au3 sourcefile
+---------------------------------------------------------------------
+
+Use-case:
+Split_e, user at the DonationCoder.com forum, needed a tool to flip the pages of his e-book reader software, after shooting a screen using ScreenShotCaptor.
+That tool wasn't easily found on the internet, but scripting tools like AutoIt3 and AutoHotKey can easily do that, so it's a nice challenge to bring them together :)
+Then WinSendKeys 1.0 was born, created using AutoIt3 (www.autoitscript.com/autoit3) because I have some experience in it. It took me about an hour, including testing, to create it, and parsing a few command-parameters so it's a little manageble.
+The next, yet unnumbered, release included debug-logging, and a few small improvements.
+After the release, Split_e explained what and how he was using it, and that the e-reader he's using wasn't keyboard-controlable any longer, so he added another AHK script to press a button in the interface.
+But that mouse-press/control-clicking can ofcourse also be done by AutoIt3, so I decided to add that as a feature to WinSendKeys. After fiddling around a few hours, interpreting the sometimes sparse AutoIt3 documentation, it's now also controling the mouse and where it clicks.
+I decided to name this version 2.0, because of the rather major enhancement.
+Next was the promissed feature of reading strokes from a file, and that was added in version 2.5
+Version 2.6 added ClipBoard content handling
+Version 3.0 can optionally start an executable file (with parameters) if the WindowName is not found or executablename is not running yet
+Version 3.1 adds 3 commands to -f filemode, so another window or exe (with optional parameters) can be selected or a delay executed
+A few settings are read from WinSendKeys.ini, if that file exists.
+Version 3.2 adds 9 commands to -f filemode, to allow for some programmability in a script, like waiting for a window to open or close, goto or gosub a labeled subroutine and return, and display a message
+Version 3.2.1 adds 1 setting for the ini file, and documentation on supported settings in the ini file.
+
+Below is an explanation of how to use all of WinSendKeys' features.
+
+Todo/Planned for a next release:
+- Any requests?
+
+Usage:
+The general use is to let WinSendKeys send keystrokes to an application you need to control 'from the outside' and without direct user-interaction.
+Commands can be placed as parameters on the command-line or in a specified textfile, one stroke per line.
+
+Syntax:
+WinSendKeys [-d] [-t keydelay] [-m|-mm speed] [-c|-cc] [-cn] [-x executable_filepath] [-xp executable_parameters] [-f strokefile] [-v] [-w] [<WindowName>] [<KeyStrokes/MouseStrokes>] [...]
+Options: (anything between [] is optional)
+-d :			Enable debug mode, writing log information to WinSendKeys.log (or whatever the tool is renamed to), and displays a messagebox if the window isn't found.
+-t keydelay :	Change the delay between separate KeyStrokes/MouseStrokes. Value in milliseconds. Default is 100 msec.
+-m :			Enable MouseStrokes mode. Speed = 0, moves the mousecursor immediately, without animation.
+-mm speed :		Enable MouseStrokes mode with mouse moving with <speed> from it's current position to the new position. Valid range: 1 (fast) to 100 (slow). Out of range sets speed to 0.
+-f strokefile :	Read KeyStrokes and/or MouseStrokes from this file, line by line, keydelay is applied after each line. Optional comments have a semicolon in the first position, empty lines are ignored. Command-line strokes are handled first, if specified.
+		If a line starts with one of these commands: (these commands are _not_ supported from the commandline! but -f ofcourse is)
+		--window windowname				: Switch focus/keystrokes to windowname, the same rules as for the -w commandline parameter apply
+		--exec exename					: equivalent to -x commandline parameter. If the windowname or exename can not be found/activated or started, the -f processing will be stopped!
+		--exec "exename"_"parameters"	: the same as combining -x and -xp commandline parameters, all 4 quotes and the underscore are required! Any -xd setting required should be supplied at the commandline.
+										  -exec allows for environment and macro parameters to be expanded, as explained with -v parameter, but here it's always enabled
+		--delay delay_in_msec			: delay processing for this count of milliseconds
+					an extra strokes file demonstrating these features is included: WinSendKeys-MultiWindow.stro
+		--winwait windowname [maxwait]	: Wait for a windowname, title or exename to be or get active, and select that. Wait indefinately (default) or the number of seconds specifed in maxwait
+		--winclose windowname [maxwait]	: Wait for a windowname, title or exename to be closed/go away. Wait indefinately (default) or the number of seconds specifed in maxwait
+					if maxwait is set, and the timeout expires, the result can be tested with --error
+		--error quit					: Test the result of a timed --winwait/--winclose, and if it expired, quit the script
+		--error goto <label>			: Test the result of a timed --winwait/--winclose, and if it expired, goto that label in the script
+		--:<label>						: Set a label marker in a script to --error got, --goto or --gosub to
+		--goto <label>					: Continue processing at the named --:<label>
+		--gosub <label> [parameters]	: Jump to the routine at --:<label>, and setup stuff to --return to the next line in the script. Uses a stack, so is nestable, parameters are preserved on the stack too
+		--return						: Return to the line after the last gosub that was activated. If encountered without an 'active' gosub, the script continues without error
+		--quit							: End the script
+		--msg [timeout,]message text	: Display a message as define in the message text, optionally using environment variables surrounded with %, macro's surrounded with @ or script variables surrounded with $
+										  Most useful (and guaranteed to exist) variable would be $params$, the parameters that can be passed with --gosub 
+										  Available @macro@ variables can be found at http://www.autoitscript.com/autoit3/docs/macros.htm
+										  Sets status for --error if the optional timeout (in seconds) expires.
+					an extra strokes file showing these --winwait, --winclose, --error, --gosub and --msg features is included: WinSendKeys-WaitWindow.stro
+-c :			Send any text-content of the Windows Clipboard to the WindowName selected.
+-cn :			Like -c option, but does not send an {ENTER} after each line/command, can be added after -c or -cn to disable the {Enter} being sent
+-cc :			Like -c option, but the clipboard content can be embedded at the commandline using #$ prefix, like #$* to send all clipboard content, equal to -c option, #$ or #$0 to send the next line available, stops after the last line, 
+				or #$3 to send 3rd line from the clipboard (1-based) if that exists, #$3 #$ sends line 3 and 4 from the clipboard
+-x executable_filepath :	Specify an executable to start if WindowName is not found. If no WindowName is specified, the executable is searched first, and executed if not found. Surround with quotes if the path has any spaces. Any %environment.var% and @macro@ variables are expanded.
+-xp executable_parameters :	Any parameters to pass onto executable_filepath, if the parameters need spaces, use quotes to group the parameters into 1 piece.
+-xd delay :		Delay for <delay> millisecondes after running -x executable_filepath, to allow for starting & initializing that app. It is added to the -t delay (100 msec) that was already there. Default = 0.
+-v			  : Variable expansion mode. When enabled allows %environment%, @macro@ and $autoit$ local variables to be expanded for keystrokes that are sent to the window. The behavior is described here: http://www.autoitscript.com/autoit3/docs/functions/AutoItSetOption.htm sections ExpandEnvStrings and ExpandVarStrings
+-? :			Display the help message on screen.
+-w WindowName :	Select (bring to foreground) an active, visible, application with this name/title. Exact rules/format documented here: www.autoitscript.com/autoit3/docs/intro/windowsadvanced.htm
+                So WindowName kan be a partial match, like "- notepad" to select a notepad instance with an open document, or "readme.txt - notepad" to explicitly select that window, or [CLASS:Notepad] to select Windows Notepad.
+                Next to specifying an application by title, it can also be selected by naming the Window ClassName, etc. as documented. 
+				When passing a numeric value (not hex!) then it will be converted to a Window  Handle (HWnd), for other tools to more easily pass a known window
+             -> This rather technical information can best be determined using 'AutoIt Window Info', installed with AutoIt3, as it presents the information in a way that can easily be copy/pasted onto the command-line or into a (batch)script.
+                If the window can not be found, no keys are sent, use [ACTIVE] to send keystrokes to the current active window.
+                If no KeyStrokes or MouseStrokes are specified, then only the window is activated.
+				If WindowName is not specified but -x executable_filepath option is used, then that window is activated.
+<KeyStrokes> :	Keystrokes are descriptive keys or normal text, to be sent to the window, just specified. If no keystrokes or mousestrokes are specified, then only the window is brought to front.
+				The entire set of keys is documented at the AutoIt3 site: www.autoitscript.com/autoit3/docs/appendix/SendKeys.htm
+				Keys can be sent in small or larger groups, depending on requirement and reaction-speed of the application. Keystrokes grouped together are sent as one sequence, when separated by a space, the keydelay is applied, 
+				so using {TAB}^^b^^u sends these 3 keystrokes <Tab>, Ctrl-B, Ctrl-U as 1 group, and {TAB} ^^b ^^u sends <Tab>, delay(100 msec), Ctrl-B, delay(100 msec), Ctrl-U, to the application. 
+			 -> The ^ character, meaning Ctrl in AutoIt3 speak, NEEDS to be doubled on a Windows commandline, as a single ^ is the escape-character for otherwise special characters in CMD.EXE like >, ( etc.
+				If you need to send a space, or want to send multiple the same keystrokes, just wrap it inside single or double quotes, like ' ' for a space ({SPACE} would also work), or "{DOWN 5}" to send 5 times a DownArrow keypress.
+			 -> Sending Ctrl or Alt keys is usually best done using lower-case letters, as not all apps support upper-case here or interpret Ctrl-Shift-<Character> differently.
+<MouseStrokes> :	MouseStrokes are sets of parameters to either the ControlClick or MouseClick function of AutoIt3. 
+					Documentation for ControlClick: www.autoitscript.com/autoit3/docs/functions/ControlClick.htm
+					Documentation for MouseClick: www.autoitscript.com/autoit3/docs/functions/MouseClick.htm
+					The Control or Mouse clicks are distinguished from KeyStrokes by a prefix, ## for ControlClick, and #% for MouseClick.
+
+ControlClick parameters: ##[<WindowName>],[<Text>],Control[,Button[,Clicks[,x[,y]]]]
+WindowName : See WindowName above, defaults to the WindowName parameter given earlier.
+Text : Text to select the window, usually empty.
+Control :	The ControlID or control description as documented here: www.autoitscript.com/autoit3/docs/intro/controls.htm
+			If a numeric ControlID is used, it is changed to [ID:<id>] to ease the use
+		 -> This rather technical information can best be determined using 'AutoIt Window Info', installed with AutoIt3, as it presents the information in a way that can easily be copy/pasted onto the command-line, into a (batch)script or strokes file.
+Button :	Defaults to "Primary" if not specified, for a standard configuration that's a left-button click, and for a left-handed configured mouse it's a right-button click.
+Clicks :	Number of mouse-clicks to send. Defaults to 1.
+x,y :		Position of the click to occur. Defaults to the centre of the selected control. If only x is specified, y still gets set to the vertical centre.
+Example: 
+WinSendKeys -m "Management Console" "##,,[CLASS:TToolBar; INSTANCE:1],,,12,12"
+This clicks on a window called Management Console, and presses a key on a toolbar, on coordinate 12,12 within the toolbar, where the Close button is located :-)
+The ControlClick is enclosed in quotes because the control specification has a space in it, and that would split this MouseStroke, which isn't supported.
+
+MouseClick parameters: #%Button,x,y[,Clicks[,speed]]
+Button :	Defaults to "Primary" if not specified, for a standard configuration that's a left-button click, and for a left-handed configured mouse it's a right-button click.
+Clicks :	Number of mouse-clicks to send. Defaults to 1.
+x,y :		The position to click relative to the selected Window.
+Speed :		The mouse-move speed, defaults to the -mm parameter above, or 0 if not set. Range 0 (immediate), 1 (fast) to 100 (slow)
+Example:
+WinSendKeys.exe -m "Management Console" #%,20,70
+Clicks in the same windows as the ControlClick example, but this time clicks on the relative position of the toolbar button within the window to close the application.
+
+ClipboardStrokes examples
+Example 1:
+WinSendKeys -cc [ACTIVE] dir{Enter} #$ {Tab}
+- This sends a 'dir' command (activated by {Enter}) to the currently active window (a cmd.exe session?), the first line of the clipboard including an {Enter}, and a {Tab} keystroke.
+Example 2:
+WinSendKeys -c [ACTIVE]
+- This sends all lines on the clipboard to the currently active window (a cmd.exe session?), each followed by an {Enter}
+
+----------------------------
+Settings in WinSendKeys.ini:
+----------------------------
+The name of the inifile is the same as the name of the executable or au3 file of WinSendKeys.
+Supported (optional) settings in a section called [Settings]:
+[Settings]
+delay=				: The delay in milliseconds between (sets of) keystrokes sent, default = 100 msec. See -t command-line option.
+mousestrokes=		: Enable or disable (default) the use of MouseStrokes, mouse commands sent from WinSendKeys, 0 = off, 1 is on. See -m command-line option.
+mousespeed=			: The speed-factor for mouse-moves, 0 = immediate, range 1..100 where 1 is fast, and 100 is (quite) slow, see -mm command-line option and 'Speed' in this page: http://www.autoitscript.com/autoit3/docs/functions/MouseMove.htm
+exedelay=			: The delay to obey after an exe is started, before it's activated by WinSendKeys, see -xd command-line option.
+expandvariables=	: Enable environment, macro and local AutoIt variable expansion for keystrokes sent (default off for compatibility reasons), 0 = off, 1 is on. See -v command-line option.

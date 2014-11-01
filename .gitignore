@@ -1,0 +1,9 @@
+node_modules
+public
+.tmp
+.idea
+.grunt
+client/bower_components
+dist
+/server/config/local.env.js
+WinSendKeys.log
