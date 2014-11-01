@@ -4,7 +4,7 @@ Send keystroke macros to your windows PC using node.js and Angular.
 ## Introduction for users
 remote-sendkeys consist of two parts, a server application run on your PC and a client application on another device.  The  **host server** must be running on the PC you wish to send keystrokes to.  A remote machine (laptop, tablet, smartphone, etc) accessing  the **client web application** in a browser can then send keystrokes to the **host server**.  The client application must be on the same local network as the host (or otherwise have access to the ip address of the host).
 
-![alt tag](https://raw.githubusercontent.com/Hypercubed/remote-sendkeys/master/remote-sedkeys-example.gif)
+![alt tag](https://raw.githubusercontent.com/Hypercubed/remote-sendkeys/master/remote-sendkeys-example.gif)
 (example, note in this example the host and client are the same machine, not very usefull)
 
 ## Introduction for developers
