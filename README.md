@@ -9,7 +9,7 @@ remote-sendkeys consist of two parts, a server application run on your PC and a 
 
 ## Introduction for developers
 
-**The host server**  The host server is a node.js/Express server that provides an API for emitting keystrokes to the PC.  The keystokes themselves are emitted to the active window using the [WinSendKeys](http://ath.dcmembers.com/wb/pages/software/winsendkeys.php) application.  The host server also hosts a copy of the client application although it is not necessary that you use this instance.
+**The host server**  The host server is a node.js/Express server that provides an API for emitting keystrokes to the PC.  The keystokes themselves are emitted to the active window using the [WinSendKeys](https://www.dcmembers.com/ath/download/winsendkeys/) application.  The host server also hosts a copy of the client application although it is not necessary that you use this instance.
 
 **A client web application**  The client web application allow you to send keystroke macros to the host PC, or save keystrokes for later using a simple and intuitive user interface built using AngularJS.
 
